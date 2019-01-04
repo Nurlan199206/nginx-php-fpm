@@ -12,3 +12,7 @@ nginx 1.14
 
 
 run command: ansible-playbook -i /etc/ansible/roles/nginx/defaults/static.cfg --connection=local -s /etc/ansible/roles/nginx/nginx.yml
+
+for successfully run playbook, dont forget add in /etc/ansible/ansible.cfg 
+
+invalid_task_attribute_failed=False
