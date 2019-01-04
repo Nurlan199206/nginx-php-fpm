@@ -1,0 +1,59 @@
+---
+  - name: Stop service apache2, if started
+    service:
+      name: apache2
+      state: stopped
+
+  - name: Remove "apache2" package
+    apt:
+      name: apache2
+      state: absent
+
+  - name: install "nginx" package
+    apt:
+      name: nginx
+      state: latest
+
+  - name: install "php-72" package
+    apt:
+      name: php
+      state: latest
+
+  - name: install "php-fpm" package
+    apt:
+      name: php-fpm
+      state: latest
+
+  - name: copy the nginx config file and restart nginx
+    copy:
+      src: /etc/ansible/roles/nginx/defaults/default
+      dest: /etc/nginx/sites-available/default
+    become: yes
+
+  - name: create symlink
+    file:
+       src: /etc/nginx/sites-available/default
+       dest: /etc/nginx/sites-available/default
+    state: link
+    become: yes
+
+  - name: Start service nginx, if not started
+    service:
+      name: nginx
+      state: started
+
+  - name: service nginx reload
+    service:
+      name: nginx
+      state: reloaded
+
+  - name: Remove "dovecot" package
+    apt:
+      name: dovecot-imapd
+      state: absent
+
+  - name: Remove "mysql-server" package
+    apt:
+      name: mysql-server
+      state: absent
+
