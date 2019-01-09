@@ -1,14 +1,4 @@
 ---
-  - name: Stop service apache2, if started
-    service:
-      name: apache2
-      state: stopped
-
-  - name: Remove "apache2" package
-    apt:
-      name: apache2
-      state: absent
-
   - name: install "nginx" package
     apt:
       name: nginx
@@ -30,12 +20,13 @@
       dest: /etc/nginx/sites-available/default
     become: yes
 
-  - name: create symlink
-    file:
-       src: /etc/nginx/sites-available/default
-       dest: /etc/nginx/sites-available/default
-    state: link
-    become: yes
+  - shell: "php -n -v | head -n 1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2"
+    register: php_version
+  - lineinfile:
+      path: /etc/nginx/sites-available/default
+      regexp: "^fastcgi_pass unix:"
+      insertafter: "^include snippets/fastcgi-php.conf;"
+      line: "fastcgi_pass unix:/var/run/php/php{{ php_version.stdout }}-fpm.sock;"
 
   - name: Start service nginx, if not started
     service:
@@ -56,4 +47,3 @@
     apt:
       name: mysql-server
       state: absent
-
